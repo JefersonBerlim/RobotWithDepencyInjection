@@ -1,0 +1,356 @@
+﻿@{
+    ViewBag.Title = "ROBO";
+}
+
+<style>
+
+    table.greenTable {
+        font-family: Georgia, serif;
+        border: 6px solid #24943A;
+        background-color: #D4EED1;
+        width: 100%;
+        text-align: center;
+    }
+
+        table.greenTable td, table.greenTable th {
+            border: 1px solid #24943A;
+            padding: 3px 2px;
+        }
+
+        table.greenTable tbody td {
+            font-size: 13px;
+        }
+
+        table.greenTable thead {
+            background: #24943A;
+            background: -moz-linear-gradient(top, #5baf6b 0%, #3a9e4d 66%, #24943A 100%);
+            background: -webkit-linear-gradient(top, #5baf6b 0%, #3a9e4d 66%, #24943A 100%);
+            background: linear-gradient(to bottom, #5baf6b 0%, #3a9e4d 66%, #24943A 100%);
+            border-bottom: 0px solid #444444;
+        }
+
+            table.greenTable thead th {
+                font-size: 19px;
+                font-weight: bold;
+                color: #F0F0F0;
+                text-align: left;
+                border-left: 2px solid #24943A;
+            }
+
+                table.greenTable thead th:first-child {
+                    border-left: none;
+                }
+
+        table.greenTable tfoot {
+            font-size: 13px;
+            font-weight: bold;
+            color: #F0F0F0;
+            background: #24943A;
+            background: -moz-linear-gradient(top, #5baf6b 0%, #3a9e4d 66%, #24943A 100%);
+            background: -webkit-linear-gradient(top, #5baf6b 0%, #3a9e4d 66%, #24943A 100%);
+            background: linear-gradient(to bottom, #5baf6b 0%, #3a9e4d 66%, #24943A 100%);
+            border-top: 1px solid #24943A;
+        }
+
+            table.greenTable tfoot td {
+                font-size: 13px;
+            }
+
+            table.greenTable tfoot .links {
+                text-align: right;
+            }
+
+                table.greenTable tfoot .links a {
+                    display: inline-block;
+                    background: #FFFFFF;
+                    color: #24943A;
+                    padding: 2px 8px;
+                    border-radius: 5px;
+                }
+</style>
+
+<div class="jumbotron">
+    <table class="greenTable">
+        <thead>
+            <tr>
+                <th>Parte do ROBO</th>
+                <th>Status Atual</th>
+                <th>Movimentar (-)</th>
+                <th>Movimentar (+)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Cabeça Inclinação</td>
+                <td><input id="cabecaInclinacao" name="cabecaInclinacao" type="text" /></td>
+                <td><input type="button" id="btnInclinarCabeca1" class="btn btn-primary btn-sm" value="-"></td>
+                <td><input type="button" id="btnInclinarCabeca2" class="btn btn-primary btn-sm" value="+"></td>
+            </tr>
+            <tr>
+                <td>Cabeça Rotação</td>
+                <td><input id="cabecaRotacao" name="cabecaRotacao" type="text" /></td>
+                <td><input type="button" id="btnRotacionarCabeca1" class="btn btn-primary btn-sm" value="-"></td>
+                <td><input type="button" id="btnRotacionarCabeca2" class="btn btn-primary btn-sm" value="+"></td>
+            </tr>
+            <tr>
+                <td>Cotovelo Braço Direito</td>
+                <td><input id="cotoveloBracoDireito" name="cotoveloBracoDireito" type="text" /></td>
+                <td><input type="button" id="btnMovimentarCotoveloD1" class="btn btn-primary btn-sm" value="-"></td>
+                <td><input type="button" id="btnMovimentarCotoveloD2" class="btn btn-primary btn-sm" value="+"></td>
+            </tr>
+            <tr>
+                <td>Pulso Braço Direito</td>
+                <td><input id="pulsoBracoDireito" name="pulsoBracoDireito" type="text" /></td>
+                <td><input type="button" id="btnMovimentarPulsoD1" class="btn btn-primary btn-sm" value="-"></td>
+                <td><input type="button" id="btnMovimentarPulsoD2" class="btn btn-primary btn-sm" value="+"></td>
+            </tr>
+            <tr>
+                <td>Cotovelo Braço Esquerdo</td>
+                <td><input id="cotoveloBracoEsquerdo" name="cotoveloBracoEsquerdo" type="text" /></td>
+                <td><input type="button" id="btnMovimentarCotoveloE1" class="btn btn-primary btn-sm" value="-"></td>
+                <td><input type="button" id="btnMovimentarCotoveloE2" class="btn btn-primary btn-sm" value="+"></td>
+            </tr>
+            <tr>
+                <td>Pulso Braço Esquerdo</td>
+                <td><input id="pulsoBracoEsquerdo" name="pulsoBracoEsquerdo" type="text" /></td>
+                <td><input type="button" id="btnMovimentarPulsoE1" class="btn btn-primary btn-sm" value="-"></td>
+                <td><input type="button" id="btnMovimentarPulsoE2" class="btn btn-primary btn-sm" value="+"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div id="erro">
+        <div class="alert alert-danger">
+            <strong>Não foi possível efetuar o movimento do ROBO</strong>
+        </div>
+    </div>
+
+    <div id="alert">
+        <div class="alert alert-success">
+            <strong>Robo Movimentado com Sucesso</strong>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+
+        // falta concluir
+        $(document).ready(function () {
+            $("#erro").hide();
+            $("#alert").hide();
+            $.ajax({
+                datatype: "json",
+                type: "GET",
+                url: "@Url.Action("StatusRobo", "Home")",
+                success: function (dados) {
+                    $("#cabecaInclinacao").val(dados.Cabeca.Inclinacao);
+                    $("#cabecaRotacao").val(dados.Cabeca.Rotacao);
+                    $("#cotoveloBracoDireito").val(dados.BracoDireito.Cotovelo);
+                    $("#pulsoBracoDireito").val(dados.BracoDireito.Pulso);
+                    $("#cotoveloBracoEsquerdo").val(dados.BracoEsquerdo.Cotovelo);
+                    $("#pulsoBracoEsquerdo").val(dados.BracoEsquerdo.Pulso);
+                }
+            })
+        })
+
+        function OnSuccess(response) {
+            $("#alert").fadeIn();
+            setTimeout(function () {
+                $('#alert').fadeOut('fast');
+            }, 3000);
+        };
+
+        function OnError(response) {
+            $("#erro").fadeIn();
+            setTimeout(function () {
+                $('#erro').fadeOut('fast');
+            }, 3000);
+        };
+
+        $(function(){
+            $("#btnInclinarCabeca1").click(function () {
+                $.ajax({
+                    url: '@Url.Action("MovimentoInclinacaoAbaixo", "Cabeca")',
+                    type: "POST"
+                }).done(function (dados) {
+                    $("#cabecaInclinacao").val(dados.Cabeca.Inclinacao);
+                        OnSuccess();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        OnError();
+                });
+            });
+        });
+
+        $(function(){
+            $("#btnInclinarCabeca2").click(function () {
+                $.ajax({
+                    url: '@Url.Action("MovimentoInclinacaoAcima", "Cabeca")',
+                    type: "POST"
+                }).done(function (dados) {
+                    $("#cabecaInclinacao").val(dados.Cabeca.Inclinacao);
+                        OnSuccess();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        OnError();
+                });
+            });
+        });
+
+        $(function(){
+            $("#btnRotacionarCabeca1").click(function () {
+                $.ajax({
+                    url: '@Url.Action("MovimentoRotacaoAbaixo", "Cabeca")',
+                    type: "POST",
+                    datatype: "JSON"
+                }).done(function (dados) {
+                    $("#cabecaRotacao").val(dados.Cabeca.Rotacao);
+                        OnSuccess();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        OnError();
+                });
+            });
+        });
+
+        $(function(){
+            $("#btnRotacionarCabeca2").click(function () {
+                $.ajax({
+                    url: '@Url.Action("MovimentoRotacaoAcima", "Cabeca")',
+                    type: "POST"
+                }).done(function (dados) {
+                    $("#cabecaRotacao").val(dados.Cabeca.Rotacao);
+                        OnSuccess();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        OnError();
+                });
+            });
+        });
+
+        $(function(){
+            $("#btnMovimentarCotoveloD1").click(function () {
+                $.ajax({
+                    url: '@Url.Action("MovimentoCotoveloDireitoAbaixo", "Braco")',
+                    type: "POST"
+                }).done(function (dados) {
+                    $("#cotoveloBracoDireito").val(dados.BracoDireito.Cotovelo);
+                        OnSuccess();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        OnError();
+                });
+            });
+        });
+
+        $(function () {
+            $("#btnMovimentarCotoveloD2").click(function () {
+                $.ajax({
+                    url: '@Url.Action("MovimentoCotoveloDireitoAcima", "Braco")',
+                    type: "POST"
+                }).done(function (dados) {
+                    $("#cotoveloBracoDireito").val(dados.BracoDireito.Cotovelo);
+                        OnSuccess();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        OnError();
+                });
+            });
+        });
+
+        $(function () {
+            $("#btnMovimentarPulsoD1").click(function () {
+                $.ajax({
+                    url: '@Url.Action("MovimentoPulsoDireitoAbaixo", "Braco")',
+                    type: "POST"
+                }).done(function (dados) {
+                    $("#pulsoBracoDireito").val(dados.BracoDireito.Pulso);
+                        OnSuccess();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        OnError();
+                });
+            });
+        });
+
+        $(function () {
+            $("#btnMovimentarPulsoD2").click(function () {
+                $.ajax({
+                    url: '@Url.Action("MovimentoPulsoDireitoAcima", "Braco")',
+                    type: "POST"
+                }).done(function (dados) {
+                    $("#pulsoBracoDireito").val(dados.BracoDireito.Pulso);
+                        OnSuccess();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        OnError();
+                });
+            });
+        });
+
+        $(function () {
+            $("#btnMovimentarCotoveloE1").click(function () {
+                $.ajax({
+                    url: '@Url.Action("MovimentoCotoveloEsquerdoAbaixo", "Braco")',
+                    type: "POST"
+                }).done(function (dados) {
+                    $("#cotoveloBracoEsquerdo").val(dados.BracoEsquerdo.Cotovelo);
+                        OnSuccess();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        OnError();
+                });
+            });
+        });
+
+        $(function () {
+            $("#btnMovimentarCotoveloE2").click(function () {
+                $.ajax({
+                    url: '@Url.Action("MovimentoCotoveloEsquerdoAcima", "Braco")',
+                    type: "POST"
+                }).done(function (dados) {
+                    $("#cotoveloBracoEsquerdo").val(dados.BracoEsquerdo.Cotovelo);
+                        OnSuccess();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        OnError();
+                });
+            });
+        });
+
+        $(function () {
+            $("#btnMovimentarPulsoE1").click(function () {
+                $.ajax({
+                    url: '@Url.Action("MovimentoPulsoEsquerdoAbaixo", "Braco")',
+                    type: "POST"
+                }).done(function (dados) {
+                    $("#pulsoBracoEsquerdo").val(dados.BracoEsquerdo.Pulso);
+                        OnSuccess();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        OnError();
+                });
+            });
+        });
+
+        $(function () {
+            $("#btnMovimentarPulsoE2").click(function () {
+                $.ajax({
+                    url: '@Url.Action("MovimentoPulsoEsquerdoAcima", "Braco")',
+                    type: "POST"
+                }).done(function (dados) {
+                    $("#pulsoBracoEsquerdo").val(dados.BracoEsquerdo.Pulso);
+                        OnSuccess();
+                    })
+                    .fail(function (jqXHR, textStatus, errorThrown) {
+                        OnError();
+                });
+            });
+        });
+
+    </script>
+}
